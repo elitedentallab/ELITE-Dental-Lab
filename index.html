@@ -331,16 +331,6 @@
     gap: 16px;
   }
 
-  .item-img {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    object-fit: cover;
-    background: #1e293b;
-    border: 1px solid var(--card-border);
-    flex-shrink: 0;
-  }
-
   .item-info .title {
     font-size: 1.1rem;
     font-weight: 800;
@@ -380,12 +370,6 @@
     color: var(--cyan-accent);
   }
 
-  .admin-actions {
-    display: flex;
-    gap: 6px;
-    margin-right: 10px;
-  }
-
   .btn-icon {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--card-border);
@@ -418,7 +402,7 @@
     font-size: 0.9rem;
     cursor: pointer;
     box-shadow: 0 5px 20px var(--gold-glow);
-    display: none; /* hidden from public view */
+    display: none;
     align-items: center;
     gap: 8px;
     transition: 0.3s;
@@ -616,7 +600,7 @@
 
     <div class="fb-status-bar" id="fbStatusBar">
       <span class="dot offline" id="fbStatusDot"></span>
-      <span id="fbStatusText">تصفح محلي (غير مرتبط بسحابة Supabase)</span>
+      <span id="fbStatusText">جاري الاتصال بالسيرفر...</span>
     </div>
 
     <div class="contact-bar">
@@ -652,8 +636,8 @@
       <h3>طلب التركيبات والمستلزمات 💬</h3>
       <p>تواصل مباشرة مع المعمل لإرسال الحالات أو طلب الخامات الفورية عبر أرقام الواتساب:</p>
       <div class="wa-btns">
-        <a href="https://wa.me/201026174966" target="_blank" class="wa-btn"> 01026174966 💬</a>
-        <a href="https://wa.me/201030808296" target="_blank" class="wa-btn"> 01030808296 💬</a>
+        <a href="https://wa.me/201026174966" target="_blank" class="wa-btn">واتساب  01026174966 💬</a>
+        <a href="https://wa.me/201030808296" target="_blank" class="wa-btn">واتساب 010308082962 💬</a>
       </div>
     </div>
     <div class="qr-wrapper">
@@ -667,8 +651,23 @@
   </footer>
 </div>
 
-<!-- Floating Admin Trigger Button (Visible only to admin) -->
+<!-- Floating Admin Trigger Button -->
 <button class="admin-fab" onclick="openAdminModal()">⚙️ لوحة التحكم</button>
+
+<!-- AUTH MODAL (كلمة السر) -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-card" style="max-width: 400px; text-align: center;">
+    <div class="modal-title">
+      <span>🔐 تسجيل دخول الإدارة</span>
+      <button class="close-modal" onclick="closeAuthModal()">✕</button>
+    </div>
+    <div class="form-group" style="margin-top: 15px;">
+      <label style="text-align: right;">كلمة المرور الخاصة بالإدارة</label>
+      <input type="password" id="adminPasswordInput" class="form-control" placeholder="أدخل كلمة المرور..." onkeydown="if(event.key==='Enter') verifyAdminPassword()">
+    </div>
+    <button class="btn-submit" onclick="verifyAdminPassword()">دخول</button>
+  </div>
+</div>
 
 <!-- ADMIN MODAL -->
 <div class="modal-overlay" id="adminModal">
@@ -680,7 +679,6 @@
 
     <div style="margin-bottom: 20px; display: flex; gap: 10px;">
       <button class="btn-submit" style="background: rgba(255,255,255,0.1); color: #fff;" onclick="openProductForm()">➕ إضافة صنف جديد</button>
-      <button class="btn-submit" style="background: rgba(0, 242, 254, 0.2); color: #00f2fe;" onclick="openSupabaseConfigModal()">⚡ إعدادات Supabase</button>
     </div>
 
     <div id="adminProductList">
@@ -733,128 +731,74 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label>صورة المنتج (رابط أو ارفع ملف)</label>
-        <input type="text" class="form-control" id="pImgUrl" placeholder="https://example.com/image.jpg" style="margin-bottom: 8px;">
-        <input type="file" class="form-control" id="pImgFile" accept="image/*" onchange="handleImageFileSelect(event)">
-      </div>
-
-      <button type="submit" class="btn-submit">حفظ الصنف</button>
+      <button type="submit" class="btn-submit" id="saveProductBtn">حفظ الصنف</button>
     </form>
   </div>
 </div>
 
-<!-- SUPABASE CONFIG MODAL -->
-<div class="modal-overlay" id="supabaseModal">
-  <div class="modal-card">
-    <div class="modal-title">
-      <span>⚡ إعدادات ربط Supabase</span>
-      <button class="close-modal" onclick="closeSupabaseConfigModal()">✕</button>
-    </div>
-
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
-      ادخل بيانات مشروعك من Supabase Dashboard (Settings -> API):
-    </p>
-
-    <div class="form-group">
-      <label>Project URL</label>
-      <input type="text" class="form-control" id="sbUrlInput" placeholder="https://your-project.supabase.co">
-    </div>
-
-    <div class="form-group">
-      <label>API Key (anon / public)</label>
-      <input type="text" class="form-control" id="sbKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6I...">
-    </div>
-
-    <button class="btn-submit" onclick="saveSupabaseConfig()">حفظ وتفعيل الربط الفوري ⚡</button>
-    <button class="btn-submit" style="background: rgba(239, 68, 68, 0.2); color: var(--danger); margin-top: 8px;" onclick="clearSupabaseConfig()">مسح الربط والعودة للتخزين المحلي</button>
-  </div>
-</div>
-
 <script>
-  // Initial Local Data Fallback
-  const defaultCategories = [
-    {
-      id: 'zircon',
-      title: '💎 الزيركون (Zirconium)',
-      items: [
-        { id: '1', title: 'Zirconia Classic', sub: 'تركيبة زيركون كلاسيكية عالية الصلابة', category: 'zircon', price1: '450 EGP', price2: '', img: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=150&auto=format&fit=crop&q=80' },
-        { id: '2', title: 'Zirconia Multilayer', sub: 'تدرج ألوان طبيعي ممتاز Multi-shade', category: 'zircon', price1: '650 EGP', price2: '', img: '' },
-        { id: '3', title: 'Zirconia Zolid', sub: 'أعلى مستويات الشفافية والجمالية', category: 'zircon', price1: '850 EGP', price2: '', img: '' },
-        { id: '4', title: 'Zirconia on Implant', sub: 'مبني على زراعة - تثبيت بالبراغي', category: 'zircon', price1: '700 EGP', price2: '', img: '' }
-      ]
-    },
-    {
-      id: 'pfm',
-      title: '⚙️ بورسلين على معدن (PFM)',
-      items: [
-        { id: '5', title: 'PFM - Turkey', sub: 'بورسلين تركيا خامة ممتازة', category: 'pfm', price1: '200 EGP', price2: '', img: '' },
-        { id: '6', title: 'PFM - Vita VM30', sub: 'خامة فيتا الألمانية المعتمدة', category: 'pfm', price1: '250 EGP', price2: '', img: '' },
-        { id: '7', title: 'PFM USA', sub: 'بورسلين أمريكي جودة عالية', category: 'pfm', price1: '300 EGP', price2: '', img: '' }
-      ]
-    },
-    {
-      id: 'partial',
-      title: '🧪 أطقم متحركة وحوارس (Dentures)',
-      items: [
-        { id: '8', title: 'Flexible - RBD', sub: 'طقم مرن ومريح للغاية', category: 'partial', price1: '350 EGP (سن)', price2: '3000 EGP (جهاز)', img: '' },
-        { id: '9', title: 'Night Guard (Soft / Hard)', sub: 'حارس ليلي لحماية الأسنان', category: 'partial', price1: '200 EGP (سن)', price2: '400 EGP (جهاز)', img: '' }
-      ]
-    },
-    {
-      id: 'endo',
-      title: '📑 فيلات وحشو العصب (Endo & Files)',
-      items: [
-        { id: '10', title: 'Adseal Meta Biomed', sub: 'سيلر حشو عصب راتنجي ممتاز', category: 'endo', price1: '850 EGP', price2: '', img: '' },
-        { id: '11', title: 'Rotary Gold Files', sub: 'فيلات روكعة معالجة حرارياً عالية المرونة', category: 'endo', price1: '350 EGP', price2: '', img: '' },
-        { id: '12', title: 'Manual K-Files / H-Files', sub: 'فيلات يدوي جميع المقاسات 15-40', category: 'endo', price1: '120 EGP', price2: '', img: '' }
-      ]
-    },
-    {
-      id: 'burs',
-      title: '💎 بيرات وتلميع (Burs & Polishing)',
-      items: [
-        { id: '13', title: 'Diamond Burs Set', sub: 'طقم بيرات ألماظ حفر وتحضير', category: 'burs', price1: '180 EGP', price2: '', img: '' },
-        { id: '14', title: 'Zirconia Polishing Kit', sub: 'طقم تلميع الزيركون السيراميكي', category: 'burs', price1: '450 EGP', price2: '', img: '' }
-      ]
-    }
-  ];
+  // =========================================================
+  // كلمة السر الجديدة للوحة التحكم
+  // =========================================================
+  const ADMIN_PASSWORD = "elitedentallab"; 
+
+  // =========================================================
+  // بيانات Supabase المشفرة
+  // =========================================================
+  const _eU = "aHR0cHM6Ly92anNzcGZleW5wa215cHZodXNjeS5zdXBhYmFzZS5jbw=="; 
+  const _eK = "c2JfcHVibGlzaGFibGVfZW9XSXduQVpuWmxHa29GeDhCQVFrQV9ndjNFNF9wcQ=="; 
+
+  const SUPABASE_URL = atob(_eU);
+  const SUPABASE_KEY = atob(_eK);
 
   let itemsData = [];
   let supabaseClient = null;
+  let secretClickCount = 0;
+  let secretClickTimer = null;
+  let isAdminAuthenticated = false;
 
-  // Initialize App
   function enterApp() {
     document.getElementById('splash').classList.add('hide');
   }
   setTimeout(enterApp, 3000);
 
-  // Secret Admin Access Logic - Extended to 20 Clicks
-  let secretClickCount = 0;
-  let secretClickTimer = null;
-
+  // نظام الـ 20 ضغطة السرية
   function handleSecretAdminClick() {
     secretClickCount++;
     clearTimeout(secretClickTimer);
-    
+
     if (secretClickCount >= 20) {
-      document.querySelector('.admin-fab').style.display = 'flex';
-      openAdminModal();
       secretClickCount = 0;
+      openAuthModal();
     } else {
       secretClickTimer = setTimeout(() => {
         secretClickCount = 0;
-      }, 3000); // Reset if user stops clicking for 3s
+      }, 3000);
     }
   }
 
-  function checkUrlForAdmin() {
-    if (window.location.search.includes('admin=true')) {
+  function openAuthModal() {
+    document.getElementById('adminPasswordInput').value = '';
+    document.getElementById('authModal').classList.add('open');
+    document.getElementById('adminPasswordInput').focus();
+  }
+
+  function closeAuthModal() {
+    document.getElementById('authModal').classList.remove('open');
+  }
+
+  function verifyAdminPassword() {
+    const inputPass = document.getElementById('adminPasswordInput').value;
+    if (inputPass === ADMIN_PASSWORD) {
+      isAdminAuthenticated = true;
+      closeAuthModal();
       document.querySelector('.admin-fab').style.display = 'flex';
+      openAdminModal();
+    } else {
+      alert("كلمة المرور غير صحيحة!");
     }
   }
 
-  // Initialize QR
   new QRCode(document.getElementById("qrcode"), {
     text: "https://wa.me/201026174966",
     width: 120,
@@ -863,81 +807,35 @@
     colorLight: "#ffffff"
   });
 
-  // Load Saved Supabase Config if available
+  // تهيئة Supabase
   function initSupabase() {
-    checkUrlForAdmin();
-    const savedConfig = localStorage.getItem('elite_supabase_config');
-    if (savedConfig) {
+    if (SUPABASE_URL && SUPABASE_KEY) {
       try {
-        const config = JSON.parse(savedConfig);
-        if (config.url && config.key) {
-          supabaseClient = supabase.createClient(config.url, config.key);
-          fetchSupabaseItems();
-        } else {
-          renderLocalData();
-        }
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        fetchSupabaseItems();
       } catch(e) {
-        console.log("Supabase config error:", e);
-        renderLocalData();
+        console.error("Supabase error:", e);
       }
-    } else {
-      renderLocalData();
     }
   }
 
   async function fetchSupabaseItems() {
     if (!supabaseClient) return;
-    
-    document.getElementById('fbStatusDot').className = 'dot online';
-    document.getElementById('fbStatusText').textContent = 'متصل';
 
     try {
       const { data, error } = await supabaseClient.from('products').select('*');
       if (error) throw error;
 
-      if (!data || data.length === 0) {
-        seedInitialDataToSupabase();
-      } else {
-        itemsData = data;
-        renderProducts();
-      }
+      document.getElementById('fbStatusDot').className = 'dot online';
+      document.getElementById('fbStatusText').textContent = 'متصل';
+
+      itemsData = data || [];
+      renderProducts();
     } catch (error) {
-      console.error("Supabase fetch error:", error);
-      renderLocalData();
+      console.error("Fetch error:", error);
+      document.getElementById('fbStatusDot').className = 'dot offline';
+      document.getElementById('fbStatusText').textContent = 'تعذر جلب البيانات';
     }
-  }
-
-  async function seedInitialDataToSupabase() {
-    let allItems = [];
-    defaultCategories.forEach(cat => {
-      cat.items.forEach(item => {
-        allItems.push(item);
-      });
-    });
-
-    const { error } = await supabaseClient.from('products').insert(allItems);
-    if (!error) {
-      fetchSupabaseItems();
-    }
-  }
-
-  function renderLocalData() {
-    document.getElementById('fbStatusDot').className = 'dot offline';
-    document.getElementById('fbStatusText').textContent = 'تصفح محلي (غير مرتبط بـ Supabase)';
-    
-    const savedLocal = localStorage.getItem('elite_local_items');
-    if (savedLocal) {
-      itemsData = JSON.parse(savedLocal);
-    } else {
-      itemsData = [];
-      defaultCategories.forEach(c => itemsData.push(...c.items));
-    }
-    renderProducts();
-  }
-
-  function saveLocalData() {
-    localStorage.setItem('elite_local_items', JSON.stringify(itemsData));
-    renderProducts();
   }
 
   function renderProducts(filterCat = 'all', searchKeyword = '') {
@@ -970,13 +868,9 @@
       let html = `<h2 class="category-title">${catTitles[cat] || cat}</h2><div class="products-grid">`;
 
       catItems.forEach(item => {
-        const defaultImg = 'https://placehold.co/100x100/1e293b/d4af37?text=ELITE';
-        const imgUrl = item.img && item.img.trim() !== '' ? item.img : defaultImg;
-
         html += `
           <div class="price-card">
             <div class="card-main">
-              <img src="${imgUrl}" class="item-img" onerror="this.src='${defaultImg}'" alt="${item.title}">
               <div class="item-info">
                 <div class="title">${item.title}</div>
                 <div class="sub">${item.sub || ''}</div>
@@ -1007,10 +901,11 @@
       container.appendChild(section);
     });
 
-    renderAdminItemsList();
+    if (isAdminAuthenticated) {
+      renderAdminItemsList();
+    }
   }
 
-  // Filter Functions
   function filterCategory(cat, btn) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -1033,6 +928,8 @@
   }
 
   function openAdminModal() {
+    if (!isAdminAuthenticated) return;
+    renderAdminItemsList();
     document.getElementById('adminModal').classList.add('open');
   }
   function closeAdminModal() {
@@ -1067,7 +964,7 @@
     document.getElementById('formModalTitle').textContent = 'إضافة صنف جديد';
 
     if (id) {
-      const item = itemsData.find(i => i.id === id);
+      const item = itemsData.find(i => String(i.id) === String(id));
       if (item) {
         document.getElementById('editProductId').value = item.id;
         document.getElementById('pTitle').value = item.title;
@@ -1075,7 +972,6 @@
         document.getElementById('pCategory').value = item.category;
         document.getElementById('pPrice1').value = item.price1;
         document.getElementById('pPrice2').value = item.price2 || '';
-        document.getElementById('pImgUrl').value = item.img || '';
         document.getElementById('formModalTitle').textContent = 'تعديل الصنف';
       }
     }
@@ -1091,38 +987,12 @@
     openProductForm(id);
   }
 
-  async function handleImageFileSelect(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (supabaseClient) {
-      const fileName = `${Date.now()}_${file.name}`;
-      const { data, error } = await supabaseClient.storage
-        .from('products')
-        .upload(fileName, file);
-
-      if (error) {
-        alert("خطأ في رفع الصورة: " + error.message);
-        return;
-      }
-
-      const { data: publicUrlData } = supabaseClient.storage
-        .from('products')
-        .getPublicUrl(fileName);
-
-      document.getElementById('pImgUrl').value = publicUrlData.publicUrl;
-    } else {
-      // Fallback base64
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        document.getElementById('pImgUrl').value = evt.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
   async function handleProductSubmit(e) {
     e.preventDefault();
+    const btn = document.getElementById('saveProductBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+
     const id = document.getElementById('editProductId').value || Date.now().toString();
     const product = {
       id: id,
@@ -1130,27 +1000,20 @@
       sub: document.getElementById('pSub').value,
       category: document.getElementById('pCategory').value,
       price1: document.getElementById('pPrice1').value,
-      price2: document.getElementById('pPrice2').value,
-      img: document.getElementById('pImgUrl').value
+      price2: document.getElementById('pPrice2').value
     };
 
     if (supabaseClient) {
       const { error } = await supabaseClient.from('products').upsert([product]);
+      btn.disabled = false;
+      btn.textContent = 'حفظ الصنف';
+
       if (error) {
-        alert("حدث خطأ أثناء الحفظ: " + error.message);
+        alert("خطأ أثناء الحفظ! يرجى التأكد من صلاحيات Table Policies في Supabase: " + error.message);
       } else {
-        fetchSupabaseItems();
+        await fetchSupabaseItems();
         closeProductForm();
       }
-    } else {
-      const index = itemsData.findIndex(i => i.id === id);
-      if (index > -1) {
-        itemsData[index] = product;
-      } else {
-        itemsData.push(product);
-      }
-      saveLocalData();
-      closeProductForm();
     }
   }
 
@@ -1160,51 +1023,13 @@
     if (supabaseClient) {
       const { error } = await supabaseClient.from('products').delete().eq('id', id);
       if (error) {
-        alert("حدث خطأ أثناء الحذف: " + error.message);
+        alert("خطأ أثناء الحذف! يرجى التأكد من صلاحيات Table Policies في Supabase: " + error.message);
       } else {
-        fetchSupabaseItems();
+        await fetchSupabaseItems();
       }
-    } else {
-      itemsData = itemsData.filter(i => i.id !== id);
-      saveLocalData();
     }
   }
 
-  function openSupabaseConfigModal() {
-    const savedConfig = localStorage.getItem('elite_supabase_config');
-    if (savedConfig) {
-      const config = JSON.parse(savedConfig);
-      document.getElementById('sbUrlInput').value = config.url || '';
-      document.getElementById('sbKeyInput').value = config.key || '';
-    }
-    document.getElementById('supabaseModal').classList.add('open');
-  }
-  
-  function closeSupabaseConfigModal() {
-    document.getElementById('supabaseModal').classList.remove('open');
-  }
-
-  function saveSupabaseConfig() {
-    const url = document.getElementById('sbUrlInput').value.trim();
-    const key = document.getElementById('sbKeyInput').value.trim();
-
-    if (url && key) {
-      const configObj = { url, key };
-      localStorage.setItem('elite_supabase_config', JSON.stringify(configObj));
-      alert("تم حفظ إعدادات Supabase بنجاح! سيتم إعادة تحميل الصفحة للتفعيل.");
-      window.location.reload();
-    } else {
-      alert("يرجى ملء كلا الحقلين (Project URL و API Key).");
-    }
-  }
-
-  function clearSupabaseConfig() {
-    localStorage.removeItem('elite_supabase_config');
-    alert("تم مسح إعدادات Supabase. سيعمل الموقع الآن في الوضع المحلي.");
-    window.location.reload();
-  }
-
-  // Window Load
   window.onload = function() {
     initSupabase();
   };
