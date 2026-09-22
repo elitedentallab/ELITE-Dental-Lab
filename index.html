@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELITE | Dental Lab & Clinic Supplies</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- Supabase JS Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --bg-dark: #070b14;
+    --card-bg: rgba(15, 23, 42, 0.8);
+    --card-border: rgba(212, 175, 55, 0.15);
+    --gold: #d4af37;
+    --gold-light: #fcf6ba;
+    --gold-glow: rgba(212, 175, 55, 0.25);
+    --gold-gradient: linear-gradient(135deg, #bf953f 0%, #fcf6ba 40%, #b38728 70%, #fbf5b7 100%);
+    --cyan-accent: #00f2fe;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --danger: #ef4444;
+    --success: #10b981;
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.06) 0%, transparent 50%);
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* SPLASH SCREEN */
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background-image: radial-gradient(circle at 50% 45%, rgba(212, 175, 55, 0.18) 0%, transparent 60%);
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+
+  #splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .splash-tooth-wrap {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .splash-tooth-svg {
+    width: 90px;
+    height: 90px;
+    filter: drop-shadow(0 0 20px var(--gold));
+    animation: floatTooth 3s ease-in-out infinite;
+  }
+
+  @keyframes floatTooth {
+    0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 15px var(--gold-glow)); }
+    50% { transform: translateY(-12px) scale(1.05); filter: drop-shadow(0 0 30px var(--gold)); }
+  }
+
+  .splash-title {
+    font-size: 3.2rem;
+    font-weight: 900;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 3px;
+  }
+
+  .splash-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .splash-btn {
+    margin-top: 15px;
+    background: var(--gold-gradient);
+    color: #070b14;
+    border: none;
+    padding: 12px 38px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 25px var(--gold-glow);
+    transition: 0.3s ease;
+  }
+
+  .splash-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 35px var(--gold);
+  }
+
+  /* HEADER */
+  header {
+    padding: 45px 0 25px;
+    text-align: center;
+  }
+
+  .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid var(--gold);
+    padding: 6px 20px;
+    border-radius: 50px;
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    user-select: none;
+  }
+
+  .header-tooth {
+    width: 45px;
+    height: 45px;
+  }
+
+  .brand-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .brand-subtitle {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* STATUS BADGE */
+  .fb-status-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-top: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.online { background: var(--success); box-shadow: 0 0 10px var(--success); }
+  .dot.offline { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
+
+  /* CONTACT BAR */
+  .contact-bar {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 10px 22px;
+    border-radius: 30px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+
+  .btn-contact:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--gold-glow);
+  }
+
+  /* SEARCH & CATEGORY TABS */
+  .controls-wrapper {
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .search-box {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 14px 22px 14px 45px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 30px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.3s;
+  }
+
+  .search-box input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 18px var(--gold-glow);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+  }
+
+  .category-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .tab-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    padding: 9px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .tab-btn.active, .tab-btn:hover {
+    background: var(--gold-gradient);
+    color: #070b14;
+    border-color: transparent;
+    box-shadow: 0 4px 15px var(--gold-glow);
+  }
+
+  /* PRODUCT CARDS */
+  .category-section {
+    margin-bottom: 35px;
+  }
+
+  .category-title {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .price-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .price-card:hover {
+    border-color: var(--gold);
+    transform: translateX(-4px);
+  }
+
+  .card-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .item-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #1e293b;
+    border: 1px solid var(--card-border);
+    flex-shrink: 0;
+  }
+
+  .item-info .title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+
+  .item-info .sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .price-tag-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .price-pill {
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    padding: 6px 14px;
+    border-radius: 10px;
+  }
+
+  .price-pill .label {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    display: block;
+  }
+
+  .price-pill .amount {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--cyan-accent);
+  }
+
+  .admin-actions {
+    display: flex;
+    gap: 6px;
+    margin-right: 10px;
+  }
+
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+  }
+
+  .btn-icon:hover { background: var(--gold); color: #000; }
+  .btn-icon.del:hover { background: var(--danger); color: #fff; }
+
+  /* FLOATING ADMIN BUTTON & PANEL */
+  .admin-fab {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    z-index: 1000;
+    background: var(--gold-gradient);
+    color: #070b14;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 5px 20px var(--gold-glow);
+    display: none; /* hidden from public view */
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+  }
+
+  .admin-fab:hover {
+    transform: scale(1.05);
+  }
+
+  /* MODALS */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal-card {
+    background: #0f172a;
+    border: 1px solid var(--gold);
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 550px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    position: relative;
+  }
+
+  .modal-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .close-modal {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+  }
+
+  .form-control:focus {
+    border-color: var(--gold);
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--gold-gradient);
+    color: #070b14;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+  }
+
+  .btn-submit:hover { opacity: 0.9; }
+
+  /* WHATSAPP CARD */
+  .whatsapp-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(7, 11, 20, 0.95));
+    border: 1px solid var(--gold);
+    border-radius: 20px;
+    padding: 35px;
+    display: grid;
+    grid-template-columns: 1fr 180px;
+    gap: 25px;
+    align-items: center;
+    margin-top: 50px;
+  }
+
+  .wa-content h3 { font-size: 1.5rem; margin-bottom: 8px; color: #fff; }
+  .wa-content p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+  .wa-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .wa-btn {
+    background: #25D366;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.88rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .qr-wrapper {
+    background: #fff;
+    padding: 12px;
+    border-radius: 14px;
+    text-align: center;
+  }
+
+  .qr-wrapper p { color: #000; font-size: 0.75rem; font-weight: 800; margin-top: 6px; }
+
+  footer {
+    text-align: center;
+    padding: 35px 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--card-border);
+    margin-top: 50px;
+  }
+
+  @media (max-width: 768px) {
+    .price-card { flex-direction: column; align-items: flex-start; }
+    .price-tag-group { width: 100%; justify-content: space-between; margin-top: 10px; }
+    .whatsapp-card { grid-template-columns: 1fr; text-align: center; }
+    .wa-btns { justify-content: center; }
+    .qr-wrapper { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-tooth-wrap">
+    <svg class="splash-tooth-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 6C23 6 26 8 32 8C38 8 41 6 44 6C52 6 56 12 56 22C56 32 50 42 46 52C43.5 58.2 38 58 36 50C34.5 44 33.5 38 32 38C30.5 38 29.5 44 28 50C26 58 20.5 58 18 52C14 42 8 32 8 22C8 12 12 6 20 6Z" fill="url(#tooth_grad)" stroke="#D4AF37" stroke-width="1.5"/>
+      <defs>
+        <linearGradient id="tooth_grad" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FCF6BA"/>
+          <stop offset="0.5" stop-color="#D4AF37"/>
+          <stop offset="1" stop-color="#AA771C"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  <div class="splash-title">ELITE</div>
+  <div class="splash-subtitle">Dental Lab & Clinic Supplies</div>
+  <button class="splash-btn" onclick="enterApp()">عرض قائمة الأسعار</button>
+</div>
+
+<div class="container">
+  <header>
+    <div class="brand-badge">✨ PREMIUM DENTAL LAB & CLINIC SUPPLIES</div>
+    <div class="header-logo" id="brandLogoTrigger" onclick="handleSecretAdminClick()" style="cursor: pointer;">
+      <svg class="header-tooth" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 6C23 6 26 8 32 8C38 8 41 6 44 6C52 6 56 12 56 22C56 32 50 42 46 52C43.5 58.2 38 58 36 50C34.5 44 33.5 38 32 38C30.5 38 29.5 44 28 50C26 58 20.5 58 18 52C14 42 8 32 8 22C8 12 12 6 20 6Z" fill="url(#header_tooth_grad)" stroke="#D4AF37" stroke-width="2"/>
+        <defs>
+          <linearGradient id="header_tooth_grad" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FCF6BA"/>
+            <stop offset="1" stop-color="#D4AF37"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h1 class="brand-title">ELITE</h1>
+    </div>
+    <p class="brand-subtitle">تركيبات المعمل ومستلزمات العيادات</p>
+
+    <div class="fb-status-bar" id="fbStatusBar">
+      <span class="dot offline" id="fbStatusDot"></span>
+      <span id="fbStatusText">تصفح محلي (غير مرتبط بسحابة Supabase)</span>
+    </div>
+
+    <div class="contact-bar">
+      <a href="tel:01026174966" class="btn-contact">📞 01026174966</a>
+      <a href="tel:01030808296" class="btn-contact">📞 01030808296</a>
+    </div>
+  </header>
+
+  <!-- Controls -->
+  <div class="controls-wrapper">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="ابحث عن تركيبة أو مادة أو فيل..." onkeyup="filterItems()">
+    </div>
+
+    <div class="category-tabs" id="categoryTabs">
+      <button class="tab-btn active" onclick="filterCategory('all', this)">الكل</button>
+      <button class="tab-btn" onclick="filterCategory('zircon', this)">الزيركون</button>
+      <button class="tab-btn" onclick="filterCategory('pfm', this)">PFM</button>
+      <button class="tab-btn" onclick="filterCategory('partial', this)">أطقم وحوارس</button>
+      <button class="tab-btn" onclick="filterCategory('endo', this)">فيلات وعصب</button>
+      <button class="tab-btn" onclick="filterCategory('burs', this)">بيرات وتلميع</button>
+      <button class="tab-btn" onclick="filterCategory('consumables', this)">مستلزمات عيادات</button>
+    </div>
+  </div>
+
+  <main id="productsContainer">
+    <!-- Products will be injected dynamically -->
+  </main>
+
+  <div class="whatsapp-card">
+    <div class="wa-content">
+      <h3>طلب التركيبات والمستلزمات 💬</h3>
+      <p>تواصل مباشرة مع المعمل لإرسال الحالات أو طلب الخامات الفورية عبر أرقام الواتساب:</p>
+      <div class="wa-btns">
+        <a href="https://wa.me/201026174966" target="_blank" class="wa-btn"> 01026174966 💬</a>
+        <a href="https://wa.me/201030808296" target="_blank" class="wa-btn"> 01030808296 💬</a>
+      </div>
+    </div>
+    <div class="qr-wrapper">
+      <div id="qrcode"></div>
+      <p>امسح للواتساب</p>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 ELITE - Dental Lab & Clinic Supplies. جميع الحقوق محفوظة.
+  </footer>
+</div>
+
+<!-- Floating Admin Trigger Button (Visible only to admin) -->
+<button class="admin-fab" onclick="openAdminModal()">⚙️ لوحة التحكم</button>
+
+<!-- ADMIN MODAL -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal-card">
+    <div class="modal-title">
+      <span>⚙️ لوحة إدارة ELITE</span>
+      <button class="close-modal" onclick="closeAdminModal()">✕</button>
+    </div>
+
+    <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+      <button class="btn-submit" style="background: rgba(255,255,255,0.1); color: #fff;" onclick="openProductForm()">➕ إضافة صنف جديد</button>
+      <button class="btn-submit" style="background: rgba(0, 242, 254, 0.2); color: #00f2fe;" onclick="openSupabaseConfigModal()">⚡ إعدادات Supabase</button>
+    </div>
+
+    <div id="adminProductList">
+      <!-- Admin items will be populated here -->
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT ADD/EDIT MODAL -->
+<div class="modal-overlay" id="productFormModal">
+  <div class="modal-card">
+    <div class="modal-title">
+      <span id="formModalTitle">إضافة صنف جديد</span>
+      <button class="close-modal" onclick="closeProductForm()">✕</button>
+    </div>
+
+    <form id="productForm" onsubmit="handleProductSubmit(event)">
+      <input type="hidden" id="editProductId">
+      
+      <div class="form-group">
+        <label>اسم الصنف / التركيبة</label>
+        <input type="text" class="form-control" id="pTitle" required placeholder="مثال: Zirconia Multilayer">
+      </div>
+
+      <div class="form-group">
+        <label>الوصف / الملاحظة</label>
+        <input type="text" class="form-control" id="pSub" placeholder="مثال: تدرج ألوان طبيعي ممتاز">
+      </div>
+
+      <div class="form-group">
+        <label>القسم</label>
+        <select class="form-control" id="pCategory" required>
+          <option value="zircon">الزيركون (Zirconium)</option>
+          <option value="pfm">PFM (بورسلين)</option>
+          <option value="partial">أطقم وحوارس (Dentures)</option>
+          <option value="endo">فيلات حشو وعصب (Endo)</option>
+          <option value="burs">بيرات وتلميع (Burs)</option>
+          <option value="consumables">مستلزمات عيادات (Consumables)</option>
+        </select>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>السعر 1 (للوحدة / للسن)</label>
+          <input type="text" class="form-control" id="pPrice1" required placeholder="450 EGP">
+        </div>
+        <div class="form-group">
+          <label>السعر 2 (اختياري / للجهاز)</label>
+          <input type="text" class="form-control" id="pPrice2" placeholder="3000 EGP">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>صورة المنتج (رابط أو ارفع ملف)</label>
+        <input type="text" class="form-control" id="pImgUrl" placeholder="https://example.com/image.jpg" style="margin-bottom: 8px;">
+        <input type="file" class="form-control" id="pImgFile" accept="image/*" onchange="handleImageFileSelect(event)">
+      </div>
+
+      <button type="submit" class="btn-submit">حفظ الصنف</button>
+    </form>
+  </div>
+</div>
+
+<!-- SUPABASE CONFIG MODAL -->
+<div class="modal-overlay" id="supabaseModal">
+  <div class="modal-card">
+    <div class="modal-title">
+      <span>⚡ إعدادات ربط Supabase</span>
+      <button class="close-modal" onclick="closeSupabaseConfigModal()">✕</button>
+    </div>
+
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+      ادخل بيانات مشروعك من Supabase Dashboard (Settings -> API):
+    </p>
+
+    <div class="form-group">
+      <label>Project URL</label>
+      <input type="text" class="form-control" id="sbUrlInput" placeholder="https://your-project.supabase.co">
+    </div>
+
+    <div class="form-group">
+      <label>API Key (anon / public)</label>
+      <input type="text" class="form-control" id="sbKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6I...">
+    </div>
+
+    <button class="btn-submit" onclick="saveSupabaseConfig()">حفظ وتفعيل الربط الفوري ⚡</button>
+    <button class="btn-submit" style="background: rgba(239, 68, 68, 0.2); color: var(--danger); margin-top: 8px;" onclick="clearSupabaseConfig()">مسح الربط والعودة للتخزين المحلي</button>
+  </div>
+</div>
+
+<script>
+  // Initial Local Data Fallback
+  const defaultCategories = [
+    {
+      id: 'zircon',
+      title: '💎 الزيركون (Zirconium)',
+      items: [
+        { id: '1', title: 'Zirconia Classic', sub: 'تركيبة زيركون كلاسيكية عالية الصلابة', category: 'zircon', price1: '450 EGP', price2: '', img: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=150&auto=format&fit=crop&q=80' },
+        { id: '2', title: 'Zirconia Multilayer', sub: 'تدرج ألوان طبيعي ممتاز Multi-shade', category: 'zircon', price1: '650 EGP', price2: '', img: '' },
+        { id: '3', title: 'Zirconia Zolid', sub: 'أعلى مستويات الشفافية والجمالية', category: 'zircon', price1: '850 EGP', price2: '', img: '' },
+        { id: '4', title: 'Zirconia on Implant', sub: 'مبني على زراعة - تثبيت بالبراغي', category: 'zircon', price1: '700 EGP', price2: '', img: '' }
+      ]
+    },
+    {
+      id: 'pfm',
+      title: '⚙️ بورسلين على معدن (PFM)',
+      items: [
+        { id: '5', title: 'PFM - Turkey', sub: 'بورسلين تركيا خامة ممتازة', category: 'pfm', price1: '200 EGP', price2: '', img: '' },
+        { id: '6', title: 'PFM - Vita VM30', sub: 'خامة فيتا الألمانية المعتمدة', category: 'pfm', price1: '250 EGP', price2: '', img: '' },
+        { id: '7', title: 'PFM USA', sub: 'بورسلين أمريكي جودة عالية', category: 'pfm', price1: '300 EGP', price2: '', img: '' }
+      ]
+    },
+    {
+      id: 'partial',
+      title: '🧪 أطقم متحركة وحوارس (Dentures)',
+      items: [
+        { id: '8', title: 'Flexible - RBD', sub: 'طقم مرن ومريح للغاية', category: 'partial', price1: '350 EGP (سن)', price2: '3000 EGP (جهاز)', img: '' },
+        { id: '9', title: 'Night Guard (Soft / Hard)', sub: 'حارس ليلي لحماية الأسنان', category: 'partial', price1: '200 EGP (سن)', price2: '400 EGP (جهاز)', img: '' }
+      ]
+    },
+    {
+      id: 'endo',
+      title: '📑 فيلات وحشو العصب (Endo & Files)',
+      items: [
+        { id: '10', title: 'Adseal Meta Biomed', sub: 'سيلر حشو عصب راتنجي ممتاز', category: 'endo', price1: '850 EGP', price2: '', img: '' },
+        { id: '11', title: 'Rotary Gold Files', sub: 'فيلات روكعة معالجة حرارياً عالية المرونة', category: 'endo', price1: '350 EGP', price2: '', img: '' },
+        { id: '12', title: 'Manual K-Files / H-Files', sub: 'فيلات يدوي جميع المقاسات 15-40', category: 'endo', price1: '120 EGP', price2: '', img: '' }
+      ]
+    },
+    {
+      id: 'burs',
+      title: '💎 بيرات وتلميع (Burs & Polishing)',
+      items: [
+        { id: '13', title: 'Diamond Burs Set', sub: 'طقم بيرات ألماظ حفر وتحضير', category: 'burs', price1: '180 EGP', price2: '', img: '' },
+        { id: '14', title: 'Zirconia Polishing Kit', sub: 'طقم تلميع الزيركون السيراميكي', category: 'burs', price1: '450 EGP', price2: '', img: '' }
+      ]
+    }
+  ];
+
+  let itemsData = [];
+  let supabaseClient = null;
+
+  // Initialize App
+  function enterApp() {
+    document.getElementById('splash').classList.add('hide');
+  }
+  setTimeout(enterApp, 3000);
+
+  // Secret Admin Access Logic - Extended to 20 Clicks
+  let secretClickCount = 0;
+  let secretClickTimer = null;
+
+  function handleSecretAdminClick() {
+    secretClickCount++;
+    clearTimeout(secretClickTimer);
+    
+    if (secretClickCount >= 20) {
+      document.querySelector('.admin-fab').style.display = 'flex';
+      openAdminModal();
+      secretClickCount = 0;
+    } else {
+      secretClickTimer = setTimeout(() => {
+        secretClickCount = 0;
+      }, 3000); // Reset if user stops clicking for 3s
+    }
+  }
+
+  function checkUrlForAdmin() {
+    if (window.location.search.includes('admin=true')) {
+      document.querySelector('.admin-fab').style.display = 'flex';
+    }
+  }
+
+  // Initialize QR
+  new QRCode(document.getElementById("qrcode"), {
+    text: "https://wa.me/201026174966",
+    width: 120,
+    height: 120,
+    colorDark: "#070b14",
+    colorLight: "#ffffff"
+  });
+
+  // Load Saved Supabase Config if available
+  function initSupabase() {
+    checkUrlForAdmin();
+    const savedConfig = localStorage.getItem('elite_supabase_config');
+    if (savedConfig) {
+      try {
+        const config = JSON.parse(savedConfig);
+        if (config.url && config.key) {
+          supabaseClient = supabase.createClient(config.url, config.key);
+          fetchSupabaseItems();
+        } else {
+          renderLocalData();
+        }
+      } catch(e) {
+        console.log("Supabase config error:", e);
+        renderLocalData();
+      }
+    } else {
+      renderLocalData();
+    }
+  }
+
+  async function fetchSupabaseItems() {
+    if (!supabaseClient) return;
+    
+    document.getElementById('fbStatusDot').className = 'dot online';
+    document.getElementById('fbStatusText').textContent = 'متصل';
+
+    try {
+      const { data, error } = await supabaseClient.from('products').select('*');
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        seedInitialDataToSupabase();
+      } else {
+        itemsData = data;
+        renderProducts();
+      }
+    } catch (error) {
+      console.error("Supabase fetch error:", error);
+      renderLocalData();
+    }
+  }
+
+  async function seedInitialDataToSupabase() {
+    let allItems = [];
+    defaultCategories.forEach(cat => {
+      cat.items.forEach(item => {
+        allItems.push(item);
+      });
+    });
+
+    const { error } = await supabaseClient.from('products').insert(allItems);
+    if (!error) {
+      fetchSupabaseItems();
+    }
+  }
+
+  function renderLocalData() {
+    document.getElementById('fbStatusDot').className = 'dot offline';
+    document.getElementById('fbStatusText').textContent = 'تصفح محلي (غير مرتبط بـ Supabase)';
+    
+    const savedLocal = localStorage.getItem('elite_local_items');
+    if (savedLocal) {
+      itemsData = JSON.parse(savedLocal);
+    } else {
+      itemsData = [];
+      defaultCategories.forEach(c => itemsData.push(...c.items));
+    }
+    renderProducts();
+  }
+
+  function saveLocalData() {
+    localStorage.setItem('elite_local_items', JSON.stringify(itemsData));
+    renderProducts();
+  }
+
+  function renderProducts(filterCat = 'all', searchKeyword = '') {
+    const container = document.getElementById('productsContainer');
+    container.innerHTML = '';
+
+    const catTitles = {
+      zircon: '💎 الزيركون (Zirconium)',
+      pfm: '⚙️ بورسلين على معدن (PFM)',
+      partial: '🧪 أطقم متحركة وحوارس (Dentures)',
+      endo: '📑 فيلات وحشو العصب (Endo & Files)',
+      burs: '💎 بيرات وتلميع (Burs & Polishing)',
+      consumables: '🩹 مستلزمات عيادات (Clinic Consumables)'
+    };
+
+    const categories = ['zircon', 'pfm', 'partial', 'endo', 'burs', 'consumables'];
+
+    categories.forEach(cat => {
+      if (filterCat !== 'all' && filterCat !== cat) return;
+
+      const catItems = itemsData.filter(item => item.category === cat && 
+        (item.title.toLowerCase().includes(searchKeyword) || (item.sub && item.sub.toLowerCase().includes(searchKeyword)))
+      );
+
+      if (catItems.length === 0) return;
+
+      const section = document.createElement('div');
+      section.className = 'category-section';
+
+      let html = `<h2 class="category-title">${catTitles[cat] || cat}</h2><div class="products-grid">`;
+
+      catItems.forEach(item => {
+        const defaultImg = 'https://placehold.co/100x100/1e293b/d4af37?text=ELITE';
+        const imgUrl = item.img && item.img.trim() !== '' ? item.img : defaultImg;
+
+        html += `
+          <div class="price-card">
+            <div class="card-main">
+              <img src="${imgUrl}" class="item-img" onerror="this.src='${defaultImg}'" alt="${item.title}">
+              <div class="item-info">
+                <div class="title">${item.title}</div>
+                <div class="sub">${item.sub || ''}</div>
+              </div>
+            </div>
+
+            <div class="price-tag-group">
+              ${item.price1 ? `
+                <div class="price-pill">
+                  <span class="label">السعر</span>
+                  <span class="amount">${item.price1}</span>
+                </div>
+              ` : ''}
+
+              ${item.price2 ? `
+                <div class="price-pill">
+                  <span class="label">الجهاز / الكلي</span>
+                  <span class="amount">${item.price2}</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      section.innerHTML = html;
+      container.appendChild(section);
+    });
+
+    renderAdminItemsList();
+  }
+
+  // Filter Functions
+  function filterCategory(cat, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const keyword = document.getElementById('searchInput').value.toLowerCase();
+    renderProducts(cat, keyword);
+  }
+
+  function filterItems() {
+    const keyword = document.getElementById('searchInput').value.toLowerCase();
+    const activeTab = document.querySelector('.tab-btn.active').getAttribute('onclick');
+    let cat = 'all';
+    if (activeTab.includes('zircon')) cat = 'zircon';
+    else if (activeTab.includes('pfm')) cat = 'pfm';
+    else if (activeTab.includes('partial')) cat = 'partial';
+    else if (activeTab.includes('endo')) cat = 'endo';
+    else if (activeTab.includes('burs')) cat = 'burs';
+    else if (activeTab.includes('consumables')) cat = 'consumables';
+
+    renderProducts(cat, keyword);
+  }
+
+  function openAdminModal() {
+    document.getElementById('adminModal').classList.add('open');
+  }
+  function closeAdminModal() {
+    document.getElementById('adminModal').classList.remove('open');
+  }
+
+  function renderAdminItemsList() {
+    const adminList = document.getElementById('adminProductList');
+    if (!adminList) return;
+
+    adminList.innerHTML = '';
+    itemsData.forEach(item => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);';
+      row.innerHTML = `
+        <div>
+          <div style="font-weight:700; color:#fff;">${item.title}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">${item.category} - ${item.price1}</div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-icon" onclick="editProduct('${item.id}')">✏️</button>
+          <button class="btn-icon del" onclick="deleteProduct('${item.id}')">🗑️</button>
+        </div>
+      `;
+      adminList.appendChild(row);
+    });
+  }
+
+  function openProductForm(id = null) {
+    document.getElementById('productForm').reset();
+    document.getElementById('editProductId').value = '';
+    document.getElementById('formModalTitle').textContent = 'إضافة صنف جديد';
+
+    if (id) {
+      const item = itemsData.find(i => i.id === id);
+      if (item) {
+        document.getElementById('editProductId').value = item.id;
+        document.getElementById('pTitle').value = item.title;
+        document.getElementById('pSub').value = item.sub || '';
+        document.getElementById('pCategory').value = item.category;
+        document.getElementById('pPrice1').value = item.price1;
+        document.getElementById('pPrice2').value = item.price2 || '';
+        document.getElementById('pImgUrl').value = item.img || '';
+        document.getElementById('formModalTitle').textContent = 'تعديل الصنف';
+      }
+    }
+
+    document.getElementById('productFormModal').classList.add('open');
+  }
+
+  function closeProductForm() {
+    document.getElementById('productFormModal').classList.remove('open');
+  }
+
+  function editProduct(id) {
+    openProductForm(id);
+  }
+
+  async function handleImageFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (supabaseClient) {
+      const fileName = `${Date.now()}_${file.name}`;
+      const { data, error } = await supabaseClient.storage
+        .from('products')
+        .upload(fileName, file);
+
+      if (error) {
+        alert("خطأ في رفع الصورة: " + error.message);
+        return;
+      }
+
+      const { data: publicUrlData } = supabaseClient.storage
+        .from('products')
+        .getPublicUrl(fileName);
+
+      document.getElementById('pImgUrl').value = publicUrlData.publicUrl;
+    } else {
+      // Fallback base64
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById('pImgUrl').value = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async function handleProductSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById('editProductId').value || Date.now().toString();
+    const product = {
+      id: id,
+      title: document.getElementById('pTitle').value,
+      sub: document.getElementById('pSub').value,
+      category: document.getElementById('pCategory').value,
+      price1: document.getElementById('pPrice1').value,
+      price2: document.getElementById('pPrice2').value,
+      img: document.getElementById('pImgUrl').value
+    };
+
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('products').upsert([product]);
+      if (error) {
+        alert("حدث خطأ أثناء الحفظ: " + error.message);
+      } else {
+        fetchSupabaseItems();
+        closeProductForm();
+      }
+    } else {
+      const index = itemsData.findIndex(i => i.id === id);
+      if (index > -1) {
+        itemsData[index] = product;
+      } else {
+        itemsData.push(product);
+      }
+      saveLocalData();
+      closeProductForm();
+    }
+  }
+
+  async function deleteProduct(id) {
+    if (!confirm("هل أنت تأكد من حذف هذا الصنف؟")) return;
+
+    if (supabaseClient) {
+      const { error } = await supabaseClient.from('products').delete().eq('id', id);
+      if (error) {
+        alert("حدث خطأ أثناء الحذف: " + error.message);
+      } else {
+        fetchSupabaseItems();
+      }
+    } else {
+      itemsData = itemsData.filter(i => i.id !== id);
+      saveLocalData();
+    }
+  }
+
+  function openSupabaseConfigModal() {
+    const savedConfig = localStorage.getItem('elite_supabase_config');
+    if (savedConfig) {
+      const config = JSON.parse(savedConfig);
+      document.getElementById('sbUrlInput').value = config.url || '';
+      document.getElementById('sbKeyInput').value = config.key || '';
+    }
+    document.getElementById('supabaseModal').classList.add('open');
+  }
+  
+  function closeSupabaseConfigModal() {
+    document.getElementById('supabaseModal').classList.remove('open');
+  }
+
+  function saveSupabaseConfig() {
+    const url = document.getElementById('sbUrlInput').value.trim();
+    const key = document.getElementById('sbKeyInput').value.trim();
+
+    if (url && key) {
+      const configObj = { url, key };
+      localStorage.setItem('elite_supabase_config', JSON.stringify(configObj));
+      alert("تم حفظ إعدادات Supabase بنجاح! سيتم إعادة تحميل الصفحة للتفعيل.");
+      window.location.reload();
+    } else {
+      alert("يرجى ملء كلا الحقلين (Project URL و API Key).");
+    }
+  }
+
+  function clearSupabaseConfig() {
+    localStorage.removeItem('elite_supabase_config');
+    alert("تم مسح إعدادات Supabase. سيعمل الموقع الآن في الوضع المحلي.");
+    window.location.reload();
+  }
+
+  // Window Load
+  window.onload = function() {
+    initSupabase();
+  };
+</script>
+</body>
+</html>
