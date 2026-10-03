@@ -504,14 +504,14 @@
 
   .btn-submit:hover { opacity: 0.9; }
 
-  /* WHATSAPP CARD */
+  /* WHATSAPP & SOCIAL CARD */
   .whatsapp-card {
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(7, 11, 20, 0.95));
     border: 1px solid var(--gold);
     border-radius: 20px;
     padding: 35px;
     display: grid;
-    grid-template-columns: 1fr 180px;
+    grid-template-columns: 1fr auto;
     gap: 25px;
     align-items: center;
     margin-top: 50px;
@@ -532,6 +532,24 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+  }
+
+  .fb-btn {
+    background: #1877F2;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.88rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .qrs-container {
+    display: flex;
+    gap: 15px;
   }
 
   .qr-wrapper {
@@ -557,6 +575,7 @@
     .price-tag-group { width: 100%; justify-content: space-between; margin-top: 10px; }
     .whatsapp-card { grid-template-columns: 1fr; text-align: center; }
     .wa-btns { justify-content: center; }
+    .qrs-container { justify-content: center; }
     .qr-wrapper { display: none; }
   }
 </style>
@@ -620,7 +639,8 @@
       <button class="tab-btn active" onclick="filterCategory('all', this)">الكل</button>
       <button class="tab-btn" onclick="filterCategory('zircon', this)">الزيركون</button>
       <button class="tab-btn" onclick="filterCategory('pfm', this)">PFM</button>
-      <button class="tab-btn" onclick="filterCategory('partial', this)">أطقم وحوارس</button>
+      <button class="tab-btn" onclick="filterCategory('partial', this)">أطقم</button>
+      <button class="tab-btn" onclick="filterCategory('ortho', this)">Orthodontic</button>
       <button class="tab-btn" onclick="filterCategory('endo', this)">فيلات وعصب</button>
       <button class="tab-btn" onclick="filterCategory('burs', this)">بيرات وتلميع</button>
       <button class="tab-btn" onclick="filterCategory('consumables', this)">مستلزمات عيادات</button>
@@ -633,16 +653,23 @@
 
   <div class="whatsapp-card">
     <div class="wa-content">
-      <h3>طلب التركيبات والمستلزمات 💬</h3>
-      <p>تواصل مباشرة مع المعمل لإرسال الحالات أو طلب الخامات الفورية عبر أرقام الواتساب:</p>
+      <h3>تواصل معنا ومتابعتنا 💬</h3>
+      <p>تواصل مباشرة مع المعمل لإرسال الحالات أو متابعة صفحتنا على فيسبوك:</p>
       <div class="wa-btns">
-        <a href="https://wa.me/201026174966" target="_blank" class="wa-btn">واتساب  01026174966 💬</a>
-        <a href="https://wa.me/201030808296" target="_blank" class="wa-btn">واتساب 010308082962 💬</a>
+        <a href="https://wa.me/201026174966" target="_blank" class="wa-btn">واتساب المبيعات 1 💬</a>
+        <a href="https://wa.me/201030808296" target="_blank" class="wa-btn">واتساب المبيعات 2 💬</a>
+        <a href="https://www.facebook.com/people/elite-dental-lab/61593115005664/" target="_blank" class="fb-btn">صفحتنا على فيسبوك 👍</a>
       </div>
     </div>
-    <div class="qr-wrapper">
-      <div id="qrcode"></div>
-      <p>امسح للواتساب</p>
+    <div class="qrs-container">
+      <div class="qr-wrapper">
+        <div id="qrcode"></div>
+        <p>امسح للواتساب</p>
+      </div>
+      <div class="qr-wrapper">
+        <div id="qrcode-fb"></div>
+        <p>امسح للفيسبوك</p>
+      </div>
     </div>
   </div>
 
@@ -673,7 +700,7 @@
 <div class="modal-overlay" id="adminModal">
   <div class="modal-card">
     <div class="modal-title">
-      <span>⚙️ لوحة إدارة ELITE</span>
+      <span>⚙️️ لوحة إدارة ELITE</span>
       <button class="close-modal" onclick="closeAdminModal()">✕</button>
     </div>
 
@@ -713,7 +740,8 @@
         <select class="form-control" id="pCategory" required>
           <option value="zircon">الزيركون (Zirconium)</option>
           <option value="pfm">PFM (بورسلين)</option>
-          <option value="partial">أطقم وحوارس (Dentures)</option>
+          <option value="partial">أطقم (Dentures)</option>
+          <option value="ortho">Orthodontic (تقويم الأسنان)</option>
           <option value="endo">فيلات حشو وعصب (Endo)</option>
           <option value="burs">بيرات وتلميع (Burs)</option>
           <option value="consumables">مستلزمات عيادات (Consumables)</option>
@@ -738,7 +766,7 @@
 
 <script>
   // =========================================================
-  // كلمة السر الجديدة للوحة التحكم
+  // كلمة السر للوحة التحكم
   // =========================================================
   const ADMIN_PASSWORD = "elitedentallab"; 
 
@@ -750,6 +778,8 @@
 
   const SUPABASE_URL = atob(_eU);
   const SUPABASE_KEY = atob(_eK);
+
+  const FB_PAGE_URL = "https://www.facebook.com/people/elite-dental-lab/61593115005664/";
 
   let itemsData = [];
   let supabaseClient = null;
@@ -799,10 +829,20 @@
     }
   }
 
+  // QR Code للواتساب
   new QRCode(document.getElementById("qrcode"), {
     text: "https://wa.me/201026174966",
-    width: 120,
-    height: 120,
+    width: 110,
+    height: 110,
+    colorDark: "#070b14",
+    colorLight: "#ffffff"
+  });
+
+  // QR Code للفيسبوك المحدث
+  new QRCode(document.getElementById("qrcode-fb"), {
+    text: FB_PAGE_URL,
+    width: 110,
+    height: 110,
     colorDark: "#070b14",
     colorLight: "#ffffff"
   });
@@ -827,7 +867,7 @@
       if (error) throw error;
 
       document.getElementById('fbStatusDot').className = 'dot online';
-      document.getElementById('fbStatusText').textContent = 'متصل';
+      document.getElementById('fbStatusText').textContent = 'متصل بنجاح (مُحَدّث)';
 
       itemsData = data || [];
       renderProducts();
@@ -844,14 +884,15 @@
 
     const catTitles = {
       zircon: '💎 الزيركون (Zirconium)',
-      pfm: '⚙️ بورسلين على معدن (PFM)',
-      partial: '🧪 أطقم متحركة وحوارس (Dentures)',
+      pfm: '⚙️ (PFM)',
+      partial: '🧪 أطقم متحركة (Dentures)',
+      ortho: '🦷 Orthodontic (تقويم الأسنان)',
       endo: '📑 فيلات وحشو العصب (Endo & Files)',
       burs: '💎 بيرات وتلميع (Burs & Polishing)',
       consumables: '🩹 مستلزمات عيادات (Clinic Consumables)'
     };
 
-    const categories = ['zircon', 'pfm', 'partial', 'endo', 'burs', 'consumables'];
+    const categories = ['zircon', 'pfm', 'partial', 'ortho', 'endo', 'burs', 'consumables'];
 
     categories.forEach(cat => {
       if (filterCat !== 'all' && filterCat !== cat) return;
@@ -920,6 +961,7 @@
     if (activeTab.includes('zircon')) cat = 'zircon';
     else if (activeTab.includes('pfm')) cat = 'pfm';
     else if (activeTab.includes('partial')) cat = 'partial';
+    else if (activeTab.includes('ortho')) cat = 'ortho';
     else if (activeTab.includes('endo')) cat = 'endo';
     else if (activeTab.includes('burs')) cat = 'burs';
     else if (activeTab.includes('consumables')) cat = 'consumables';
